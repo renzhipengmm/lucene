@@ -113,6 +113,40 @@ public class TestSearchIndex {
 		System.out.println("-------------");
 		seach.seachePage("select", 3, 2);
 	}
-	
-	
+
+	@Test
+	public void testSearchBySearchManager() {
+		QueryParser queryParser = new QueryParser("context", new StandardAnalyzer());
+		try {
+			Query query = queryParser.parse("select");
+			// 包含以下内容 为OR 的 或 关系 默认空格为OR
+			query = queryParser.parse("select  from");
+			// 可以更改默认为AND 关系
+			// queryParser.setDefaultOperator(Operator.AND);
+			// 包含以下内容 为 AND 的 并且 关系
+			query = queryParser.parse("select AND from AND appr");
+			// 改变搜索域的位置
+			query = queryParser.parse("name:select.sql");
+			// 使用通配符进行 查询 ? *
+			query = queryParser.parse("selec?");
+			// + 表示域中必须有 -必须不含有
+			query = queryParser.parse(" + name:教师*");
+			// 闭区间查询
+			query = queryParser.parse("[public  select]");
+			// 开区间查询
+			query = queryParser.parse("{public  select}");
+			// 完全匹配字符串
+			query = queryParser.parse("\"stu.historyclassinfo like\"");
+			// 匹配 字之间 有一个 距离
+			query = queryParser.parse("\"LEFT  BASE_USERINFO\"~1");
+			// 模糊查询
+			query = queryParser.parse("BASE*");
+
+			SeachUtil seach = new SeachUtil();
+			seach.seachBySearchManager(query, 100);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+
 }
